@@ -19,7 +19,7 @@ def run_file(file):
     run(f.read())
 
 
-def main(name):
+def main():
     parser = ArgumentParser()
     parser.add_argument("-f", "--file", dest="file")
     args = parser.parse_args()
@@ -32,5 +32,4 @@ def main(name):
 
 
 if __name__ == "__main__":
-
-    main("PyCharm")
+    main()
