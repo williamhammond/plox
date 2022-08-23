@@ -38,7 +38,7 @@ class Scanner:
         while not self.is_at_end():
             self._start = self._current
             self.scan_token()
-        self._tokens.append(LoxToken(LoxTokenType.EOF, "", "", self._line))
+        self._tokens.append(LoxToken(LoxTokenType.EOF, "", None, self._line))
         return self._tokens, self._errors
 
     def is_at_end(self) -> bool:
@@ -54,7 +54,7 @@ class Scanner:
         if literal is not None:
             self._tokens.append(LoxToken(token_type, text, literal, self._line))
         else:
-            self._tokens.append(LoxToken(token_type, text, "", self._line))
+            self._tokens.append(LoxToken(token_type, text, None, self._line))
 
     def match(self, expected: str) -> bool:
         if self.is_at_end():
@@ -87,8 +87,14 @@ class Scanner:
             LoxTokenType.NUMBER, float(self._source[self._start : self._current])
         )
 
+    def is_alpha(self, s: str) -> bool:
+        return ("a" <= s <= "z") or ("A" <= s <= "Z") or s == "_"
+
+    def is_alpha_numeric(self, s: str) -> bool:
+        return self.is_alpha(s) or s.isdigit()
+
     def identifier(self):
-        while self.peek().isalnum():
+        while self.is_alpha_numeric(self.peek()):
             self.advance()
         text = self._source[self._start : self._current]
         if text in self._keywords:
@@ -157,7 +163,7 @@ class Scanner:
             case _:
                 if c.isdigit():
                     self.number()
-                elif c.isalpha():
+                elif self.is_alpha(c):
                     self.identifier()
                 else:
                     self._errors.append(ParseError("Unexpected character : " + c))
